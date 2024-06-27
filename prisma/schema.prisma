@@ -26,3 +26,64 @@ model users {
   updated_at   DateTime?
   deleted_at   DateTime?
 }
+
+model products {
+  id              Int       @id @default(autoincrement())
+  name            String
+  description     String
+  id_type         Int
+  id_mark         Int
+  price           Float
+  seat            Int
+  id_transmission Int
+  id_fuel         Int
+  image           String // URL to the image
+  created_at      DateTime  @default(now())
+  updated_at      DateTime?
+  deleted_at      DateTime?
+
+  type         types         @relation(fields: [id_type], references: [id])
+  mark         marks         @relation(fields: [id_mark], references: [id])
+  transmission transmissions @relation(fields: [id_transmission], references: [id])
+  fuels        fuels         @relation(fields: [id_fuel], references: [id])
+}
+
+model types {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  products    products[]
+  created_at  DateTime   @default(now())
+  updated_at  DateTime?
+  deleted_at  DateTime?
+}
+
+model marks {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  products    products[]
+  created_at  DateTime   @default(now())
+  updated_at  DateTime?
+  deleted_at  DateTime?
+}
+
+model transmissions {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  products    products[]
+  created_at  DateTime   @default(now())
+  updated_at  DateTime?
+  deleted_at  DateTime?
+}
+
+model fuels {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  products    products[]
+  created_at  DateTime   @default(now())
+  updated_at  DateTime?
+  deleted_at  DateTime?
+}
