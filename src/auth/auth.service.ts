@@ -1,12 +1,18 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { hashPassword } from 'utils/hash-password.util';
+import { comparePasswords, hashPassword } from 'utils/hash-password.util';
 import { ApiResponse } from 'interface/response.type';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) { }
+  constructor(
+    private prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) { }
   
   async create(payload: CreateAuthDto) {
     const { email, password, ...rest } = payload;
@@ -26,10 +32,37 @@ export class AuthService {
     return this.buildResponse("Successfully registered");
   }
 
-  private buildResponse(message: string, access_token = null): ApiResponse<string> {
+  
+  async login(email: string, password: string) {
+    const user = await this.prisma.users.findUnique({ where: { email } });
+
+    // Checking user existing 
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Checking password is valid
+    const isPasswordValid = await comparePasswords(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload = { email: user.email, sub: user.id };
+
+
+    const access_token = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
+    });
+
+
+    return this.buildResponse("Successfully logged in", access_token);
+  }
+
+  private buildResponse(message: string, access_token = null): ApiResponse<{ access_token?: string }> {
     return {
       message: message,
-      data: access_token,
+      data: { access_token },
       statusCode: 200,
     };
   }
