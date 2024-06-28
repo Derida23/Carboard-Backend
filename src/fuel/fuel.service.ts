@@ -41,6 +41,9 @@ export class FuelService {
 
   async update(id: number, payload: UpdateFuelDto) {
     await this.checkData(id)
+    if(payload.name) {
+      payload.name = payload.name.toLowerCase()
+    }
     const response = await this.prisma.client.fuels.update({
       where: {
         id

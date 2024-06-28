@@ -10,8 +10,8 @@ export class TransmissionController {
   
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createTransmissionDto: CreateTransmissionDto) {
-    return this.transmissionService.create(createTransmissionDto);
+  create(@Body() payload: CreateTransmissionDto) {
+    return this.transmissionService.create(payload);
   }
 
   @UseGuards(AuthGuard)
@@ -27,8 +27,8 @@ export class TransmissionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTransmissionDto: UpdateTransmissionDto) {
-    return this.transmissionService.update(+id, updateTransmissionDto);
+  update(@Param('id') id: string, @Body() payload: UpdateTransmissionDto) {
+    return this.transmissionService.update(+id, payload);
   }
 
   @Delete(':id')

@@ -10,8 +10,8 @@ export class FuelController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createFuelDto: CreateFuelDto) {
-    return this.fuelService.create(createFuelDto);
+  create(@Body() payload: CreateFuelDto) {
+    return this.fuelService.create(payload);
   }
 
   @UseGuards(AuthGuard)

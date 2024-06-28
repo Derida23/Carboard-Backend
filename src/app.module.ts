@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TransmissionModule } from './transmission/transmission.module';
 import { FuelModule } from './fuel/fuel.module';
+import { MarkModule } from './mark/mark.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FuelModule } from './fuel/fuel.module';
     PrismaModule,
     TransmissionModule,
     FuelModule,
+    MarkModule,
   ],
   controllers: [AppController],
   providers: [AppService],
