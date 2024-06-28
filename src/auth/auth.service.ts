@@ -2,7 +2,7 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { comparePasswords, hashPassword } from '../../utils/hash-password.util';
-import { ApiResponse } from 'interface/response.type';
+import { ApiResponse } from '../../common/api-response';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
