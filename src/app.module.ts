@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { TransmissionModule } from './transmission/transmission.module';
 import { FuelModule } from './fuel/fuel.module';
 import { MarkModule } from './mark/mark.module';
+import { TypeModule } from './type/type.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MarkModule } from './mark/mark.module';
     TransmissionModule,
     FuelModule,
     MarkModule,
+    TypeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
