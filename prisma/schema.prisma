@@ -23,7 +23,7 @@ model users {
   phone_number String?
   role         String
   created_at   DateTime  @default(now())
-  updated_at   DateTime?
+  updated_at   DateTime? @updatedAt
   deleted_at   DateTime?
 }
 
@@ -39,7 +39,7 @@ model products {
   id_fuel         Int
   image           String // URL to the image
   created_at      DateTime  @default(now())
-  updated_at      DateTime?
+  updated_at      DateTime? @updatedAt
   deleted_at      DateTime?
 
   type         types         @relation(fields: [id_type], references: [id])
@@ -54,7 +54,7 @@ model types {
   description String?
   products    products[]
   created_at  DateTime   @default(now())
-  updated_at  DateTime?
+  updated_at  DateTime?  @updatedAt
   deleted_at  DateTime?
 }
 
@@ -64,7 +64,7 @@ model marks {
   description String?
   products    products[]
   created_at  DateTime   @default(now())
-  updated_at  DateTime?
+  updated_at  DateTime?  @updatedAt
   deleted_at  DateTime?
 }
 
@@ -74,7 +74,7 @@ model transmissions {
   description String?
   products    products[]
   created_at  DateTime   @default(now())
-  updated_at  DateTime?
+  updated_at  DateTime?  @updatedAt
   deleted_at  DateTime?
 }
 
@@ -84,6 +84,6 @@ model fuels {
   description String?
   products    products[]
   created_at  DateTime   @default(now())
-  updated_at  DateTime?
+  updated_at  DateTime?  @updatedAt
   deleted_at  DateTime?
 }

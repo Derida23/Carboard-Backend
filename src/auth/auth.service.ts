@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { comparePasswords, hashPassword } from 'utils/hash-password.util';
+import { PrismaService } from '../../src/prisma/prisma.service';
+import { comparePasswords, hashPassword } from '../../utils/hash-password.util';
 import { ApiResponse } from 'interface/response.type';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -17,13 +17,15 @@ export class AuthService {
   async create(payload: CreateAuthDto) {
     const { email, password, ...rest } = payload;
 
-    // Checking existing email
+    /**
+     * Checking existing email
+     * Encrypted password
+     */
     const existingUser = await this.prisma.users.findUnique({ where: { email } });
     if (existingUser) {
       throw new ConflictException('Email is already in use');
     }
 
-    // Encrypted password
     const hashedPassword = await hashPassword(password);
     await this.prisma.users.create({
       data: { ...rest, email, password: hashedPassword },
@@ -36,25 +38,27 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await this.prisma.users.findUnique({ where: { email } });
 
-    // Checking user existing 
+    /**
+     * Checking user existing
+     * Checking password is valid
+     */
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Checking password is valid
     const isPasswordValid = await comparePasswords(password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    /**
+     * Generate JWT
+     */
     const payload = { email: user.email, sub: user.id };
-
-
     const access_token = this.jwtService.sign(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
       expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
     });
-
 
     return this.buildResponse("Successfully logged in", access_token);
   }
