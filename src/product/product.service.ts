@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -10,9 +10,22 @@ export class ProductService {
     private prisma: PrismaService
   ) { }
   
-  async create(payload: CreateProductDto) {
+  async create(payload: CreateProductDto, image: string) {
+    if (!image) {
+      throw new BadRequestException('image product cannot be empty');
+    }
+    const data = {
+      ...payload,
+      price: Number(payload.price),
+      id_type: Number(payload.id_type),
+      id_mark: Number(payload.id_mark),
+      id_transmission: Number(payload.id_transmission),
+      id_fuel: Number(payload.id_fuel),
+      seat: Number(payload.seat),
+      image,
+    }
     const response = await this.prisma.client.products.create({
-      data: payload
+      data
     })
 
     return buildResponse("Product created", response)
@@ -37,14 +50,39 @@ export class ProductService {
     return buildResponse('Product found', response)
   }
 
-  async update(id: number, payload: UpdateProductDto) {
+  async update(id: number, payload: UpdateProductDto, image: string) {
     await this.CheckData(id)
+    const data: any = {
+      ...payload,
+      image,
+    };
+
+    if (payload.price) {
+      data.price = Number(payload.price);
+    }
+    if (payload.id_type) {
+      data.id_type = Number(payload.id_type);
+    }
+    if (payload.id_mark) {
+      data.id_mark = Number(payload.id_mark);
+    }
+    if (payload.id_transmission) {
+      data.id_transmission = Number(payload.id_transmission);
+    }
+    if (payload.id_fuel) {
+      data.id_fuel = Number(payload.id_fuel);
+    }
+    if (payload.seat) {
+      data.seat = Number(payload.seat);
+    }
+
     const response = await this.prisma.client.products.update({
       where: {
         id
       },
-      data: payload
+      data
     })
+
     return buildResponse('Product updated', response)
   }
 

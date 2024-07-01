@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, UploadedFile } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -6,16 +6,30 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Role } from 'src/auth/roles/roles.enum';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly cloudinaryService: CloudinaryService
+  ) { }
 
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
   @Post()
-  create(@Body() payload: CreateProductDto) {
-    return this.productService.create(payload);
+  @UseInterceptors(FileInterceptor('image'))
+  async create(
+    @Body() payload: CreateProductDto,
+    @UploadedFile()
+    image: Express.Multer.File
+  ) {
+    let upload = null
+    if (image) {
+      upload = await this.cloudinaryService.uploadFile(image);
+    }
+    return this.productService.create(payload, upload.url);
   }
 
   @UseGuards(AuthGuard)
@@ -33,8 +47,17 @@ export class ProductController {
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() payload: UpdateProductDto) {
-    return this.productService.update(+id, payload);
+  @UseInterceptors(FileInterceptor('image'))
+  async update(
+    @Param('id') id: string,
+    @Body() payload: UpdateProductDto,
+    @UploadedFile() image: Express.Multer.File
+  ) {
+    let upload = null
+    if(image) {
+       upload = await this.cloudinaryService.uploadFile(image);
+    }
+    return this.productService.update(+id, payload, upload?.url);
   }
 
   @Roles(Role.ADMIN)

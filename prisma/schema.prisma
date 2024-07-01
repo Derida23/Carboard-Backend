@@ -37,7 +37,7 @@ model products {
   seat            Int
   id_transmission Int
   id_fuel         Int
-  image           String // URL to the image
+  image           String?
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
   deleted_at      DateTime?

@@ -10,6 +10,7 @@ import { FuelModule } from './fuel/fuel.module';
 import { MarkModule } from './mark/mark.module';
 import { TypeModule } from './type/type.module';
 import { ProductModule } from './product/product.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ProductModule } from './product/product.module';
     MarkModule,
     TypeModule,
     ProductModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService]
