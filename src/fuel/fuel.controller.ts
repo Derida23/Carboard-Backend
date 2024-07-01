@@ -3,9 +3,9 @@ import { FuelService } from './fuel.service';
 import { CreateFuelDto } from './dto/create-fuel.dto';
 import { UpdateFuelDto } from './dto/update-fuel.dto';
 import { AuthGuard } from '../../src/auth/auth.guard';
-import { Roles } from 'src/auth/roles/roles.decorator';
-import { Role } from 'src/auth/roles/roles.enum';
-import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { Roles } from '../../src/auth/roles/roles.decorator';
+import { Role } from '../../src/auth/roles/roles.enum';
+import { RolesGuard } from '../../src/auth/roles/roles.guard';
 
 @Controller('fuels')
 export class FuelController {

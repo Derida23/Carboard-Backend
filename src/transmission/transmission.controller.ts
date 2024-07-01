@@ -3,9 +3,9 @@ import { TransmissionService } from './transmission.service';
 import { CreateTransmissionDto } from './dto/create-transmission.dto';
 import { UpdateTransmissionDto } from './dto/update-transmission.dto';
 import { AuthGuard } from '../../src/auth/auth.guard';
-import { Roles } from 'src/auth/roles/roles.decorator';
-import { Role } from 'src/auth/roles/roles.enum';
-import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { Roles } from '../../src/auth/roles/roles.decorator';
+import { Role } from '../../src/auth/roles/roles.enum';
+import { RolesGuard } from '../../src/auth/roles/roles.guard';
 
 @Controller('transmissions')
 export class TransmissionController {

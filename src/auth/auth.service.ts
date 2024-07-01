@@ -63,7 +63,8 @@ export class AuthService {
     return this.buildResponse("Successfully logged in", access_token);
   }
 
-  private buildResponse(message: string, access_token = null): ApiResponse<{ access_token?: string }> {
+  private buildResponse(message: string, access_token: string | null = null): ApiResponse<{ access_token?: string | null }>
+  {
     return {
       message: message,
       data: { access_token },

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { UpdateTypeDto } from './dto/update-type.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { buildResponse } from 'common/response-util';
+import { PrismaService } from '../../src/prisma/prisma.service';
+import { buildResponse } from '../../common/response-util';
 
 @Injectable()
 export class TypeService {

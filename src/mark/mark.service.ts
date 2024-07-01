@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { UpdateMarkDto } from './dto/update-mark.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { buildResponse } from 'common/response-util';
+import { PrismaService } from '../../src/prisma/prisma.service';
+import { buildResponse } from '../../common/response-util';
 
 @Injectable()
 export class MarkService {

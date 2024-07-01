@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { MarkService } from './mark.service';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { UpdateMarkDto } from './dto/update-mark.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Role } from 'src/auth/roles/roles.enum';
-import { Roles } from 'src/auth/roles/roles.decorator';
-import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { AuthGuard } from '../../src/auth/auth.guard';
+import { Role } from '../../src/auth/roles/roles.enum';
+import { Roles } from '../../src/auth/roles/roles.decorator';
+import { RolesGuard } from '../../src/auth/roles/roles.guard';
 
 @Controller('marks')
 export class MarkController {

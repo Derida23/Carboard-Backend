@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTransmissionDto } from './dto/create-transmission.dto';
 import { UpdateTransmissionDto } from './dto/update-transmission.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../src/prisma/prisma.service';
 import { buildResponse } from '../../common/response-util';
 
 @Injectable()

@@ -1,26 +1,60 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
-import { PrismaService } from '../../prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { CreateAuthDto } from '../dto/create-auth.dto';
+import { LoginAuthDto } from '../dto/login-auth.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let providers: AuthService;
+  let authService: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [AuthService, PrismaService, JwtService, ConfigService],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            create: jest.fn(),
+            login: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    providers = module.get<AuthService>(AuthService);
+    authService = module.get<AuthService>(AuthService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-    expect(providers).toBeDefined();
+  });
+
+  describe('create', () => {
+    it('should call authService.create with correct data', async () => {
+      const createAuthDto: CreateAuthDto = {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+        role: 'user',
+      };
+
+      await controller.create(createAuthDto);
+
+      expect(authService.create).toHaveBeenCalledWith(createAuthDto);
+    });
+  });
+
+  describe('login', () => {
+    it('should call authService.login with correct credentials', async () => {
+      const loginAuthDto: LoginAuthDto = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      await controller.login(loginAuthDto);
+
+      expect(authService.login).toHaveBeenCalledWith(loginAuthDto.email, loginAuthDto.password);
+    });
   });
 });

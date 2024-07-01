@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFuelDto } from './dto/create-fuel.dto';
 import { UpdateFuelDto } from './dto/update-fuel.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
-import { buildResponse } from 'common/response-util';
+import { buildResponse } from '../../common/response-util';
 
 @Injectable()
 export class FuelService {
