@@ -9,6 +9,7 @@ import { TransmissionModule } from './transmission/transmission.module';
 import { FuelModule } from './fuel/fuel.module';
 import { MarkModule } from './mark/mark.module';
 import { TypeModule } from './type/type.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TypeModule } from './type/type.module';
     FuelModule,
     MarkModule,
     TypeModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService]
