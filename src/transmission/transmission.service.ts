@@ -17,7 +17,7 @@ export class TransmissionService {
      * Create transmission payload
      */
     payload.name = payload.name.toLowerCase()
-    const response = await this.prisma.transmissions.create({
+    const response = await this.prisma.client.transmissions.create({
       data: payload
     })
     return buildResponse('Transmission created', response)

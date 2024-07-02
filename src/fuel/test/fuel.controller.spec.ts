@@ -53,7 +53,7 @@ describe('FuelController', () => {
 
   describe('create', () => {
     it('should create a new fuel', async () => {
-      const dto: CreateFuelDto = { name: 'Electric', description: 'Electric fuel', created_at: new Date() };
+      const dto: CreateFuelDto = { name: 'Electric', description: 'Electric fuel', created_at: new Date("2024-07-02T07:29:31.276Z") };
       expect(await controller.create(dto)).toEqual({
         id: expect.any(Number),
         ...dto,

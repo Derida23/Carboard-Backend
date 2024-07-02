@@ -45,15 +45,15 @@ describe('FuelService', () => {
 
   describe('create', () => {
     it('should create a new fuel', async () => {
-      const dto: CreateFuelDto = { name: 'Petrol', description: 'Petrol fuel', created_at: new Date() };
-      const expectedResponse = { id: 1, name: 'petrol', description: 'Petrol fuel', created_at: new Date() };
+      const dto: CreateFuelDto = { name: 'Petrol', description: 'Petrol fuel', created_at: new Date("2024-07-02T07:29:31.276Z") };
+      const expectedResponse = { id: 1, name: 'petrol', description: 'Petrol fuel', created_at: new Date("2024-07-02T07:29:31.276Z") };
 
       (prismaServiceMock.client.fuels.create as jest.Mock).mockResolvedValue(expectedResponse);
 
       const result = await service.create(dto);
 
       expect(result).toEqual(buildResponse('Fuel created', expectedResponse));
-      expect(prismaServiceMock.client.fuels.create).toHaveBeenCalledWith({ data: { name: 'petrol', description: 'Petrol fuel', created_at: new Date() } });
+      expect(prismaServiceMock.client.fuels.create).toHaveBeenCalledWith({ data: { name: 'petrol', description: 'Petrol fuel', created_at: new Date("2024-07-02T07:29:31.276Z") } });
     });
   });
 

@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { TypeService } from './type.service';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { UpdateTypeDto } from './dto/update-type.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Roles } from 'src/auth/roles/roles.decorator';
-import { Role } from 'src/auth/roles/roles.enum';
-import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { AuthGuard } from '../../src/auth/auth.guard';
+import { Roles } from '../../src/auth/roles/roles.decorator';
+import { Role } from '../../src/auth/roles/roles.enum';
+import { RolesGuard } from '../../src/auth/roles/roles.guard';
 
 @Controller('types')
 export class TypeController {
