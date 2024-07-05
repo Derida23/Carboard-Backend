@@ -43,12 +43,12 @@ export class AuthService {
      * Checking password is valid
      */
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials provided. Please check your email or password, and try again.');
     }
 
     const isPasswordValid = await comparePasswords(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials provided. Please check your email or password, and try again.');
     }
 
     /**
