@@ -11,6 +11,7 @@ import { MarkModule } from './mark/mark.module';
 import { TypeModule } from './type/type.module';
 import { ProductModule } from './product/product.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     TypeModule,
     ProductModule,
     CloudinaryModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService]
