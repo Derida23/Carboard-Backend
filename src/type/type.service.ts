@@ -9,7 +9,6 @@ export class TypeService {
   constructor(private prisma: PrismaService) { }
 
   async create(payload: CreateTypeDto) {
-    payload.name = payload.name.toLowerCase()
     const response = await this.prisma.client.types.create({
       data: {
         name: payload.name
@@ -38,9 +37,6 @@ export class TypeService {
 
   async update(id: number, payload: UpdateTypeDto) {
     await this.checkData(id)
-    if(payload.name) {
-      payload.name = payload.name.toLowerCase()
-    }
     const response = await this.prisma.client.types.update({
       where: {
         id

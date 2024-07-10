@@ -35,7 +35,6 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('me')
   findMe(@Req() req) {
-    console.log(req.user.id)
     return this.userService.findMe(+req.user.id);
   }
 

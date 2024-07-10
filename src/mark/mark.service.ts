@@ -10,7 +10,6 @@ export class MarkService {
     private prisma: PrismaService
   ) { }
   async create(payload: CreateMarkDto) {
-    payload.name = payload.name.toLowerCase()
     const response = await this.prisma.client.marks.create({
       data: payload
     })
@@ -37,9 +36,6 @@ export class MarkService {
 
   async update(id: number, payload: UpdateMarkDto) {
     await this.checkData(id)
-    if(payload.name) {
-      payload.name = payload.name.toLowerCase()
-    }
     const response = await this.prisma.client.marks.update({
       where: {
         id

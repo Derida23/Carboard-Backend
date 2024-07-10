@@ -16,7 +16,6 @@ export class TransmissionService {
      * Create name is lowercase
      * Create transmission payload
      */
-    payload.name = payload.name.toLowerCase()
     const response = await this.prisma.client.transmissions.create({
       data: payload
     })
@@ -46,9 +45,6 @@ export class TransmissionService {
 
   async update(id: number, payload: UpdateTransmissionDto) {
     await this.checkData(id)
-    if(payload.name) {
-      payload.name = payload.name.toLowerCase()
-    }
     const response = await this.prisma.client.transmissions.update({
       where: {
         id

@@ -14,7 +14,6 @@ export class FuelService {
      * Create name is lowercase
      * Create fuel payload
      */
-    payload.name = payload.name.toLowerCase()
     const response = await this.prisma.client.fuels.create({
       data: payload
     })
@@ -41,9 +40,6 @@ export class FuelService {
 
   async update(id: number, payload: UpdateFuelDto) {
     await this.checkData(id)
-    if(payload.name) {
-      payload.name = payload.name.toLowerCase()
-    }
     const response = await this.prisma.client.fuels.update({
       where: {
         id

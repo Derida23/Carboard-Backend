@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { FuelService } from './fuel.service';
 import { CreateFuelDto } from './dto/create-fuel.dto';
 import { UpdateFuelDto } from './dto/update-fuel.dto';
@@ -20,8 +20,12 @@ export class FuelController {
   
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.fuelService.findAll();
+  findAll(
+    @Query('start_date') start_date?: string,
+    @Query('end_date') end_date?: string,
+    @Query('name') name?: string,
+   ) {
+    return this.fuelService.findAll({ start_date, end_date, name });
   }
 
   @UseGuards(AuthGuard)
