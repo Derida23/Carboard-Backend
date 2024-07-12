@@ -9,7 +9,7 @@ import { RolesGuard } from '../../src/auth/roles/roles.guard';
 
 @Controller('fuels')
 export class FuelController {
-  constructor(private readonly fuelService: FuelService) {}
+  constructor(private readonly fuelService: FuelService) { }
 
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
@@ -17,15 +17,17 @@ export class FuelController {
   create(@Body() payload: CreateFuelDto) {
     return this.fuelService.create(payload);
   }
-  
+
   @UseGuards(AuthGuard)
   @Get()
   findAll(
     @Query('start_date') start_date?: string,
     @Query('end_date') end_date?: string,
     @Query('name') name?: string,
-   ) {
-    return this.fuelService.findAll({ start_date, end_date, name });
+    @Query('page') page = 1,
+    @Query('per_page') per_page = 10,
+  ) {
+    return this.fuelService.findAll({ start_date, end_date, name }, { page, per_page });
   }
 
   @UseGuards(AuthGuard)
