@@ -11,9 +11,7 @@ export class TypeService {
 
   async create(payload: CreateTypeDto) {
     const response = await this.prisma.client.types.create({
-      data: {
-        name: payload.name
-      }
+      data: payload
     })
     return buildResponse('Type created', response)
   }
