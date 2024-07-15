@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTransmissionDto } from './dto/create-transmission.dto';
 import { UpdateTransmissionDto } from './dto/update-transmission.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
-import { buildResponse } from '../../common/response-util';
+import { buildResponse, buildResponseMeta } from '../../common/response-util';
+import { TransmissionFilters, PageFilters, TransmissionWhere } from './interface';
 
 @Injectable()
 export class TransmissionService {
@@ -22,16 +23,45 @@ export class TransmissionService {
     return buildResponse('Transmission created', response)
   }
 
-  async findAll() {
+  async findAll(filters: TransmissionFilters, pagination: PageFilters) {
     /**
      * Find all transmission
      */
+    const { start_date, end_date, name } = filters;
+    const { page = 1, per_page = 10 } = pagination;
+
+    const where: TransmissionWhere = {};
+    if (start_date || end_date) {
+      where.created_at = {};
+      if (start_date) {
+        where.created_at.gte = new Date(start_date);
+      }
+      if (end_date) {
+        where.created_at.lte = new Date(end_date);
+      }
+    }
+    if (name) {
+      where.name = {
+        contains: name,
+        mode: 'insensitive',
+      };
+    }
+
     const response = await this.prisma.client.transmissions.findMany({
+      where,
       orderBy: {
         id: 'asc'
-      }
+      },
+      skip: Number((page - 1) * per_page),
+      take: Number(per_page),
     })
-    return buildResponse('Transmission list', response)
+    const total = await this.countAll()
+    const meta = {
+      total,
+      page: Number(page),
+      per_page: Number(per_page),
+    }
+    return buildResponseMeta('Fuel list', response, meta)
   }
 
   async findOne(id: number) {
@@ -76,5 +106,10 @@ export class TransmissionService {
     }
 
     return
+  }
+
+  async countAll() {
+    const totalCount = await this.prisma.client.transmissions.count();
+    return totalCount
   }
 }

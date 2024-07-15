@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { TypeService } from './type.service';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { UpdateTypeDto } from './dto/update-type.dto';
@@ -20,8 +20,13 @@ export class TypeController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.typeService.findAll();
+  findAll(
+    @Query('start_date') start_date?: string,
+    @Query('end_date') end_date?: string,
+    @Query('name') name?: string,
+    @Query('page') page = 1,
+    @Query('per_page') per_page = 10,) {
+    return this.typeService.findAll({ start_date, end_date, name }, { page, per_page });
   }
 
   @UseGuards(AuthGuard)
