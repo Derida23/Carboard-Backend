@@ -52,7 +52,7 @@ export class MarkService {
       page: Number(page),
       per_page: Number(per_page),
     }
-    return buildResponseMeta('Fuel list', response, meta)
+    return buildResponseMeta('Mark list', response, meta)
   }
 
   async findOne(id: number) {

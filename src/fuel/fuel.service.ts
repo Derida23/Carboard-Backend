@@ -50,6 +50,7 @@ export class FuelService {
       skip: Number((page - 1) * per_page),
       take: Number(per_page),
     })
+    
     const total = await this.countAll()
     const meta = {
       total,

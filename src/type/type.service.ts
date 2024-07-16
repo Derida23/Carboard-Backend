@@ -51,7 +51,7 @@ export class TypeService {
       per_page: Number(per_page),
     }
     
-    return buildResponseMeta('Fuel list', response, meta)
+    return buildResponseMeta('Type list', response, meta)
   }
 
   async findOne(id: number) {

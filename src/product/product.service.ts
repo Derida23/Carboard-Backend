@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
-import { buildResponse } from '../../common/response-util';
+import { buildResponse, buildResponseMeta } from '../../common/response-util';
 
 @Injectable()
 export class ProductService {
@@ -31,13 +31,73 @@ export class ProductService {
     return buildResponse("Product created", response)
   }
 
-  async findAll() {
+  async findAll(filters: any, pagination: any) {
+    const { start_date, end_date, name, id_type, id_mark, id_transmission, id_fuel } = filters;
+    const { page = 1, per_page = 10 } = pagination;
+
+    const where: any = {};
+    if (start_date || end_date) {
+      where.created_at = {};
+      if (start_date) {
+        where.created_at.gte = new Date(start_date);
+      }
+      if (end_date) {
+        where.created_at.lte = new Date(end_date);
+      }
+    }
+
+    if (name) {
+      where.name = {
+        contains: name,
+        mode: 'insensitive',
+      };
+    }
+
+    if (id_fuel && id_fuel.length > 0) {
+      where.id_fuel = {
+        in: JSON.parse(id_fuel).map(Number),
+      };
+    }
+
+    if (id_mark && id_mark.length > 0) {
+      where.id_mark = {
+        in: JSON.parse(id_mark).map(Number),
+      };
+    }
+
+    if (id_transmission && id_transmission.length > 0) {
+      where.id_transmission = {
+        in: JSON.parse(id_transmission).map(Number),
+      };
+    }
+
+    if (id_type && id_type.length > 0) {
+      where.id_type = {
+        in: JSON.parse(id_type).map(Number),
+      };
+    }
+
+    const total = await this.countAll()
     const response = await this.prisma.client.products.findMany({
+      where,
       orderBy: {
         id: 'asc'
-      }
+      },
+      skip: Number((page - 1) * per_page),
+      take: Number(per_page),
+      include: {
+        type: true,
+        mark: true,
+        transmission: true,
+        fuel: true,
+      },
     })
-    return buildResponse('Product list', response)
+    const meta = {
+      total,
+      page: Number(page),
+      per_page: Number(per_page),
+    }
+    return buildResponseMeta('Product list', response, meta)
   }
 
   async findOne(id: number) {
@@ -101,5 +161,10 @@ export class ProductService {
     if (!dataExisting) {
       throw new NotFoundException('Product not found')
     }
+  }
+
+  async countAll() {
+    const totalCount = await this.prisma.client.marks.count();
+    return totalCount
   }
 }
