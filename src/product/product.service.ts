@@ -3,6 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { buildResponse, buildResponseMeta } from '../../common/response-util';
+import { ProductFilters } from './interface';
 
 @Injectable()
 export class ProductService {
@@ -31,11 +32,11 @@ export class ProductService {
     return buildResponse("Product created", response)
   }
 
-  async findAll(filters: any, pagination: any) {
+  async findAll(filters: ProductFilters, pagination: {page: number, per_page: number}) {
     const { start_date, end_date, name, id_type, id_mark, id_transmission, id_fuel } = filters;
     const { page = 1, per_page = 10 } = pagination;
 
-    const where: any = {};
+    const where: Record<string, any> = {};
     if (start_date || end_date) {
       where.created_at = {};
       if (start_date) {
@@ -112,7 +113,7 @@ export class ProductService {
 
   async update(id: number, payload: UpdateProductDto, image: string) {
     await this.CheckData(id)
-    const data: any = {
+    const data = {
       ...payload,
       image,
     };

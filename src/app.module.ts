@@ -12,6 +12,7 @@ import { TypeModule } from './type/type.module';
 import { ProductModule } from './product/product.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UserModule } from './user/user.module';
+import { FilterModule } from './filter/filter.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UserModule } from './user/user.module';
     ProductModule,
     CloudinaryModule,
     UserModule,
+    FilterModule,
   ],
   controllers: [AppController],
   providers: [AppService]
