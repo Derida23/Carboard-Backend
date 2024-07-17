@@ -38,10 +38,10 @@ export class ProductController {
     @Query('start_date') start_date?: string,
     @Query('end_date') end_date?: string,
     @Query('name') name?: string,
-    @Query('id_fuel') id_fuel?: number[],
-    @Query('id_mark') id_mark?: number[],
-    @Query('id_transmission') id_transmission?: number[],
-    @Query('id_type') id_type?: number[],
+    @Query('id_fuel') id_fuel?: string,
+    @Query('id_mark') id_mark?: string,
+    @Query('id_transmission') id_transmission?: string,
+    @Query('id_type') id_type?: string,
     @Query('page') page = 1,
     @Query('per_page') per_page = 10,) {
     return this.productService.findAll({ start_date, end_date, name, id_fuel, id_mark, id_transmission, id_type }, { page, per_page });
