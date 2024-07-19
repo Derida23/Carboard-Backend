@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { comparePasswords, hashPassword } from '../../utils/hash-password.util';
@@ -43,12 +43,12 @@ export class AuthService {
      * Checking password is valid
      */
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials provided. Please check your email or password, and try again.');
+      throw new NotFoundException('Invalid credentials provided. Please check your email or password, and try again.');
     }
 
     const isPasswordValid = await comparePasswords(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials provided. Please check your email or password, and try again.');
+      throw new NotFoundException('Invalid credentials provided. Please check your email or password, and try again.');
     }
 
     /**

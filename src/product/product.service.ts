@@ -106,6 +106,12 @@ export class ProductService {
       where: {
         id
       },
+      include: {
+        type: true,
+        mark: true,
+        transmission: true,
+        fuel: true,
+      },
     })
 
     return buildResponse('Product found', response)
