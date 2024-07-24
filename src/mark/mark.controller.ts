@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { MarkService } from './mark.service';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { UpdateMarkDto } from './dto/update-mark.dto';
@@ -20,8 +20,13 @@ export class MarkController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.markService.findAll();
+  findAll(
+    @Query('start_date') start_date?: string,
+    @Query('end_date') end_date?: string,
+    @Query('name') name?: string,
+    @Query('page') page = 1,
+    @Query('per_page') per_page = 10,) {
+    return this.markService.findAll({ start_date, end_date, name }, { page, per_page });
   }
 
   @UseGuards(AuthGuard)

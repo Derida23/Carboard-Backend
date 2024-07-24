@@ -22,7 +22,7 @@ model users {
   avatar       String?
   phone_number String?
   role         String
-  created_at   DateTime?  @default(now())
+  created_at   DateTime? @default(now())
   updated_at   DateTime? @updatedAt
   deleted_at   DateTime?
 }
@@ -38,14 +38,14 @@ model products {
   id_transmission Int
   id_fuel         Int
   image           String?
-  created_at      DateTime?  @default(now())
+  created_at      DateTime? @default(now())
   updated_at      DateTime? @updatedAt
   deleted_at      DateTime?
 
   type         types         @relation(fields: [id_type], references: [id])
   mark         marks         @relation(fields: [id_mark], references: [id])
   transmission transmissions @relation(fields: [id_transmission], references: [id])
-  fuels        fuels         @relation(fields: [id_fuel], references: [id])
+  fuel         fuels         @relation(fields: [id_fuel], references: [id])
 }
 
 model types {
@@ -53,7 +53,7 @@ model types {
   name        String
   description String?
   products    products[]
-  created_at  DateTime?   @default(now())
+  created_at  DateTime?  @default(now())
   updated_at  DateTime?  @updatedAt
   deleted_at  DateTime?
 }
@@ -63,7 +63,7 @@ model marks {
   name        String
   description String?
   products    products[]
-  created_at  DateTime?   @default(now())
+  created_at  DateTime?  @default(now())
   updated_at  DateTime?  @updatedAt
   deleted_at  DateTime?
 }
@@ -73,7 +73,7 @@ model transmissions {
   name        String
   description String?
   products    products[]
-  created_at  DateTime?   @default(now())
+  created_at  DateTime?  @default(now())
   updated_at  DateTime?  @updatedAt
   deleted_at  DateTime?
 }
@@ -83,7 +83,7 @@ model fuels {
   name        String
   description String?
   products    products[]
-  created_at  DateTime?   @default(now())
+  created_at  DateTime?  @default(now())
   updated_at  DateTime?  @updatedAt
   deleted_at  DateTime?
 }

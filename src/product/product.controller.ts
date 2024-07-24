@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, UploadedFile, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -34,8 +34,17 @@ export class ProductController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(
+    @Query('start_date') start_date?: string,
+    @Query('end_date') end_date?: string,
+    @Query('name') name?: string,
+    @Query('id_fuel') id_fuel?: string,
+    @Query('id_mark') id_mark?: string,
+    @Query('id_transmission') id_transmission?: string,
+    @Query('id_type') id_type?: string,
+    @Query('page') page = 1,
+    @Query('per_page') per_page = 10,) {
+    return this.productService.findAll({ start_date, end_date, name, id_fuel, id_mark, id_transmission, id_type }, { page, per_page });
   }
 
   @UseGuards(AuthGuard)

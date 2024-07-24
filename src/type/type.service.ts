@@ -2,29 +2,56 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { UpdateTypeDto } from './dto/update-type.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
-import { buildResponse } from '../../common/response-util';
+import { buildResponse, buildResponseMeta } from '../../common/response-util';
+import { TypeFilters, PageFilters, TypeWhere } from './interface';
 
 @Injectable()
 export class TypeService {
   constructor(private prisma: PrismaService) { }
 
   async create(payload: CreateTypeDto) {
-    payload.name = payload.name.toLowerCase()
     const response = await this.prisma.client.types.create({
-      data: {
-        name: payload.name
-      }
+      data: payload
     })
     return buildResponse('Type created', response)
   }
 
-  async findAll() {
+  async findAll(filters: TypeFilters, pagination: PageFilters) {
+    const { start_date, end_date, name } = filters;
+    const { page = 1, per_page = 10 } = pagination;
+
+    const where: TypeWhere = {};
+    if (start_date || end_date) {
+      where.created_at = {};
+      if (start_date) {
+        where.created_at.gte = new Date(start_date);
+      }
+      if (end_date) {
+        where.created_at.lte = new Date(end_date);
+      }
+    }
+    if (name) {
+      where.name = {
+        contains: name,
+        mode: 'insensitive',
+      };
+    }
     const response = await this.prisma.client.types.findMany({
+      where,
       orderBy: {
         id: 'asc'
-      }
-    })
-    return buildResponse('Types found', response)
+      },
+      skip: Number((page - 1) * per_page),
+      take: Number(per_page),
+    }) 
+    const total = await this.countAll()
+    const meta = {
+      total,
+      page: Number(page),
+      per_page: Number(per_page),
+    }
+    
+    return buildResponseMeta('Type list', response, meta)
   }
 
   async findOne(id: number) {
@@ -38,9 +65,6 @@ export class TypeService {
 
   async update(id: number, payload: UpdateTypeDto) {
     await this.checkData(id)
-    if(payload.name) {
-      payload.name = payload.name.toLowerCase()
-    }
     const response = await this.prisma.client.types.update({
       where: {
         id
@@ -69,5 +93,9 @@ export class TypeService {
     if (!dataExisting) {
       throw new NotFoundException('Type not found')
     }
+  }
+  async countAll() {
+    const totalCount = await this.prisma.client.fuels.count();
+    return totalCount
   }
 }

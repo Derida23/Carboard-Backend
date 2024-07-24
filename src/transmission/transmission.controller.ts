@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { TransmissionService } from './transmission.service';
 import { CreateTransmissionDto } from './dto/create-transmission.dto';
 import { UpdateTransmissionDto } from './dto/update-transmission.dto';
@@ -20,8 +20,13 @@ export class TransmissionController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.transmissionService.findAll();
+  findAll(
+    @Query('start_date') start_date?: string,
+    @Query('end_date') end_date?: string,
+    @Query('name') name?: string,
+    @Query('page') page = 1,
+    @Query('per_page') per_page = 10,) {
+    return this.transmissionService.findAll({ start_date, end_date, name }, { page, per_page });
   }
 
   @UseGuards(AuthGuard)

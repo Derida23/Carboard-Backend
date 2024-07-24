@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { UpdateMarkDto } from './dto/update-mark.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
-import { buildResponse } from '../../common/response-util';
+import { buildResponse, buildResponseMeta } from '../../common/response-util';
+import { MarkFilters, MarkWhere, PageFilters } from './interface';
 
 @Injectable()
 export class MarkService {
@@ -10,20 +11,48 @@ export class MarkService {
     private prisma: PrismaService
   ) { }
   async create(payload: CreateMarkDto) {
-    payload.name = payload.name.toLowerCase()
     const response = await this.prisma.client.marks.create({
       data: payload
     })
     return buildResponse('Mark created', response)
   }
 
-  async findAll() {
+  async findAll(filters: MarkFilters, pagination: PageFilters) {
+    const { start_date, end_date, name } = filters;
+    const { page = 1, per_page = 10 } = pagination;
+
+    const where: MarkWhere = {};
+    if (start_date || end_date) {
+      where.created_at = {};
+      if (start_date) {
+        where.created_at.gte = new Date(start_date);
+      }
+      if (end_date) {
+        where.created_at.lte = new Date(end_date);
+      }
+    }
+    if (name) {
+      where.name = {
+        contains: name,
+        mode: 'insensitive',
+      };
+    }
+    const total = await this.countAll()
     const response = await this.prisma.client.marks.findMany({
+      where,
       orderBy: {
         id: 'asc'
-      }
+      },
+      skip: Number((page - 1) * per_page),
+      take: Number(per_page),
     })
-    return buildResponse('Mark list', response)
+
+    const meta = {
+      total,
+      page: Number(page),
+      per_page: Number(per_page),
+    }
+    return buildResponseMeta('Mark list', response, meta)
   }
 
   async findOne(id: number) {
@@ -37,9 +66,6 @@ export class MarkService {
 
   async update(id: number, payload: UpdateMarkDto) {
     await this.checkData(id)
-    if(payload.name) {
-      payload.name = payload.name.toLowerCase()
-    }
     const response = await this.prisma.client.marks.update({
       where: {
         id
@@ -68,5 +94,9 @@ export class MarkService {
     if (!dataExisting) {
       throw new NotFoundException('Mark not found')
     }
+  }
+  async countAll() {
+    const totalCount = await this.prisma.client.marks.count();
+    return totalCount
   }
 }

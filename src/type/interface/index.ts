@@ -1,12 +1,5 @@
-export interface Fuel {
-  id: number
-  name: string
-  description: string
-  created_at: Date
-  updated_at?: Date
-  deleted_at?: Date
-}
-export interface FuelFilters {
+
+export interface TypeFilters {
   start_date?: string;
   end_date?: string;
   name?: string;
@@ -17,7 +10,7 @@ export interface PageFilters {
   per_page?: number;
 }
 
-export interface FuelWhere {
+export interface TypeWhere {
   created_at?: { gte?: Date; lte?: Date };
   name?: { contains: string; mode: 'insensitive' };
 }
