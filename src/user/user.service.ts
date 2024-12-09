@@ -3,6 +3,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { buildResponse, buildResponseMeta } from 'common/response-util';
 import { PageFilters, TypeFilters, TypeWhere } from 'src/type/interface';
+import { Role } from 'src/auth/roles/roles.enum';
 
 @Injectable()
 export class UserService {
@@ -89,8 +90,30 @@ export class UserService {
     return buildResponse('User found', response);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, payload: UpdateUserDto) {
+    await this.checkData(id);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { email, ...updateData } = payload;
+
+    const existingRole = Object.values(Role).find(
+      (role) => role === payload.role.toLowerCase(),
+    );
+
+    if (!existingRole) {
+      throw new NotFoundException('Role not found');
+    }
+
+    const response = await this.prisma.client.users.update({
+      where: {
+        id,
+      },
+      data: updateData,
+    });
+
+    delete response.password;
+
+    return buildResponse('Users updated', response);
   }
 
   async remove(id: number) {
