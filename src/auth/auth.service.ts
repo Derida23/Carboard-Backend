@@ -27,8 +27,8 @@ export class AuthService {
      * Checking role submit
      * Encrypted password
      */
-    const existingUser = await this.prisma.users.findUnique({
-      where: { email },
+    const existingUser = await this.prisma.users.findFirst({
+      where: { email, deleted_at: null },
     });
     const existingRole = Object.values(Role).find(
       (role) => role === payload.role.toLowerCase(),
