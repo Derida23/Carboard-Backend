@@ -30,14 +30,9 @@ export class AuthService {
     const existingUser = await this.prisma.users.findUnique({
       where: { email },
     });
-
-    let existingRole = null;
-
-    for (const property in Role) {
-      if (Role[property] === payload.role.toLowerCase()) {
-        existingRole = Role[property];
-      }
-    }
+    const existingRole = Object.values(Role).find(
+      (role) => role === payload.role.toLowerCase(),
+    );
 
     if (!existingRole) {
       throw new NotFoundException('Role not found');
