@@ -1,6 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { Role } from 'src/auth/roles/roles.enum';
@@ -11,25 +20,34 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // @Roles(Role.ADMIN)
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Post()
+  // create(@Body() payload: CreateUserDto) {
+  //   return this.userService.create(payload);
+  // }
+
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  @Post()
-  create(@Body() payload: CreateUserDto) {
-    return this.userService.create(payload);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(+id);
   }
 
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
   @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
-  @Roles(Role.ADMIN)
-  @UseGuards(AuthGuard, RolesGuard)
-  @Get('profile/:id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findAll(
+    @Query('start_date') start_date?: string,
+    @Query('end_date') end_date?: string,
+    @Query('name') name?: string,
+    @Query('page') page = 1,
+    @Query('per_page') per_page = 10,
+  ) {
+    return this.userService.findAll(
+      { start_date, end_date, name },
+      { page, per_page },
+    );
   }
 
   @UseGuards(AuthGuard)
@@ -40,14 +58,14 @@ export class UserController {
 
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  @Patch('profile/:id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() payload: UpdateUserDto) {
     return this.userService.update(+id, payload);
   }
 
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  @Delete('profile/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
