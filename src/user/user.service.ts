@@ -9,10 +9,6 @@ import { Role } from 'src/auth/roles/roles.enum';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  // create(payload: CreateUserDto) {
-  //   return 'This action adds a new user';
-  // }
-
   async findOne(id: number) {
     const response = await this.prisma.client.users.findUnique({
       where: {
@@ -113,12 +109,15 @@ export class UserService {
 
     delete response.password;
 
-    return buildResponse('Users updated', response);
+    return buildResponse('User updated', response);
   }
 
   async remove(id: number) {
     await this.checkData(id);
     const response = await this.prisma.client.users.delete({ id });
+
+    delete response.password;
+
     return buildResponse('User deleted', response);
   }
 

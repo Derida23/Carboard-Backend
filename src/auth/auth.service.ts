@@ -51,7 +51,9 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await this.prisma.users.findUnique({ where: { email } });
+    const user = await this.prisma.users.findFirst({
+      where: { email, deleted_at: null },
+    });
 
     /**
      * Checking user existing

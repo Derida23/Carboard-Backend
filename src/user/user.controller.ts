@@ -20,12 +20,11 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @Post()
-  // create(@Body() payload: CreateUserDto) {
-  //   return this.userService.create(payload);
-  // }
+  @UseGuards(AuthGuard)
+  @Get('me')
+  findMe(@Req() req) {
+    return this.userService.findMe(+req.user.id);
+  }
 
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
@@ -48,12 +47,6 @@ export class UserController {
       { start_date, end_date, name },
       { page, per_page },
     );
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('me')
-  findMe(@Req() req) {
-    return this.userService.findMe(+req.user.id);
   }
 
   @Roles(Role.ADMIN)
