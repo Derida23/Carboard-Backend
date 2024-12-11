@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, UploadedFile, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  Query,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -13,8 +25,8 @@ import { CloudinaryService } from '../../src/cloudinary/cloudinary.service';
 export class ProductController {
   constructor(
     private readonly productService: ProductService,
-    private readonly cloudinaryService: CloudinaryService
-  ) { }
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
@@ -23,16 +35,16 @@ export class ProductController {
   async create(
     @Body() payload: CreateProductDto,
     @UploadedFile()
-    image: Express.Multer.File
+    image: Express.Multer.File,
   ) {
-    let upload = null
+    let upload = null;
     if (image) {
       upload = await this.cloudinaryService.uploadFile(image);
     }
-    return this.productService.create(payload, upload.url);
+    return this.productService.create(payload, upload?.url ?? null);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get()
   findAll(
     @Query('start_date') start_date?: string,
@@ -43,11 +55,23 @@ export class ProductController {
     @Query('id_transmission') id_transmission?: string,
     @Query('id_type') id_type?: string,
     @Query('page') page = 1,
-    @Query('per_page') per_page = 10,) {
-    return this.productService.findAll({ start_date, end_date, name, id_fuel, id_mark, id_transmission, id_type }, { page, per_page });
+    @Query('per_page') per_page = 10,
+  ) {
+    return this.productService.findAll(
+      {
+        start_date,
+        end_date,
+        name,
+        id_fuel,
+        id_mark,
+        id_transmission,
+        id_type,
+      },
+      { page, per_page },
+    );
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
@@ -60,11 +84,11 @@ export class ProductController {
   async update(
     @Param('id') id: string,
     @Body() payload: UpdateProductDto,
-    @UploadedFile() image: Express.Multer.File
+    @UploadedFile() image: Express.Multer.File,
   ) {
-    let upload = null
-    if(image) {
-       upload = await this.cloudinaryService.uploadFile(image);
+    let upload = null;
+    if (image) {
+      upload = await this.cloudinaryService.uploadFile(image);
     }
     return this.productService.update(+id, payload, upload?.url);
   }
