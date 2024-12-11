@@ -1,10 +1,15 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { comparePasswords, hashPassword } from '../../utils/hash-password.util';
 import { ApiResponse } from '../../common/api-response';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Role } from './roles/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -12,16 +17,27 @@ export class AuthService {
     private prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
-  
+  ) {}
+
   async create(payload: CreateAuthDto) {
     const { email, password, ...rest } = payload;
 
     /**
      * Checking existing email
+     * Checking role submit
      * Encrypted password
      */
-    const existingUser = await this.prisma.users.findUnique({ where: { email } });
+    const existingUser = await this.prisma.users.findFirst({
+      where: { email, deleted_at: null },
+    });
+    const existingRole = Object.values(Role).find(
+      (role) => role === payload.role.toLowerCase(),
+    );
+
+    if (!existingRole) {
+      throw new NotFoundException('Role not found');
+    }
+
     if (existingUser) {
       throw new ConflictException('Email is already in use');
     }
@@ -31,24 +47,29 @@ export class AuthService {
       data: { ...rest, email, password: hashedPassword },
     });
 
-    return this.buildResponse("Successfully registered");
+    return this.buildResponse('Successfully registered');
   }
 
-  
   async login(email: string, password: string) {
-    const user = await this.prisma.users.findUnique({ where: { email } });
+    const user = await this.prisma.users.findFirst({
+      where: { email, deleted_at: null },
+    });
 
     /**
      * Checking user existing
      * Checking password is valid
      */
     if (!user) {
-      throw new NotFoundException('Invalid credentials provided. Please check your email or password, and try again.');
+      throw new NotFoundException(
+        'Invalid credentials provided. Please check your email or password, and try again.',
+      );
     }
 
     const isPasswordValid = await comparePasswords(password, user.password);
     if (!isPasswordValid) {
-      throw new NotFoundException('Invalid credentials provided. Please check your email or password, and try again.');
+      throw new NotFoundException(
+        'Invalid credentials provided. Please check your email or password, and try again.',
+      );
     }
 
     /**
@@ -60,11 +81,13 @@ export class AuthService {
       expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
     });
 
-    return this.buildResponse("Successfully logged in", access_token);
+    return this.buildResponse('Successfully logged in', access_token);
   }
 
-  private buildResponse(message: string, access_token: string | null = null): ApiResponse<{ access_token?: string | null }>
-  {
+  private buildResponse(
+    message: string,
+    access_token: string | null = null,
+  ): ApiResponse<{ access_token?: string | null }> {
     return {
       message: message,
       data: { access_token },

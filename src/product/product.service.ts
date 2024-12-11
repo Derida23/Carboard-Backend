@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../../src/prisma/prisma.service';
@@ -7,14 +11,38 @@ import { ProductFilters } from './interface';
 
 @Injectable()
 export class ProductService {
-  constructor(
-    private prisma: PrismaService
-  ) { }
-  
-  async create(payload: CreateProductDto, image: string) {
+  constructor(private prisma: PrismaService) {}
+
+  async create(payload: CreateProductDto, image?: string) {
     if (!image) {
-      throw new BadRequestException('image product cannot be empty');
+      throw new BadRequestException('Image product cannot be empty');
     }
+
+    const { id_type, id_mark, id_transmission, id_fuel } = payload;
+
+    // Validate related IDs
+    const [type, mark, transmission, fuel] = await Promise.all([
+      this.prisma.client.types.findUnique({ where: { id: Number(id_type) } }),
+      this.prisma.client.marks.findUnique({ where: { id: Number(id_mark) } }),
+      this.prisma.client.transmissions.findUnique({
+        where: { id: Number(id_transmission) },
+      }),
+      this.prisma.client.fuels.findUnique({ where: { id: Number(id_fuel) } }),
+    ]);
+
+    if (!type) {
+      throw new NotFoundException(`Type not found.`);
+    }
+    if (!mark) {
+      throw new NotFoundException(`Mark not found.`);
+    }
+    if (!transmission) {
+      throw new NotFoundException(`Transmission not found.`);
+    }
+    if (!fuel) {
+      throw new NotFoundException(`Fuel not found.`);
+    }
+
     const data = {
       ...payload,
       price: Number(payload.price),
@@ -24,16 +52,27 @@ export class ProductService {
       id_fuel: Number(payload.id_fuel),
       seat: Number(payload.seat),
       image,
-    }
+    };
     const response = await this.prisma.client.products.create({
-      data
-    })
+      data,
+    });
 
-    return buildResponse("Product created", response)
+    return buildResponse('Product created', response);
   }
 
-  async findAll(filters: ProductFilters, pagination: {page: number, per_page: number}) {
-    const { start_date, end_date, name, id_type, id_mark, id_transmission, id_fuel } = filters;
+  async findAll(
+    filters: ProductFilters,
+    pagination: { page: number; per_page: number },
+  ) {
+    const {
+      start_date,
+      end_date,
+      name,
+      id_type,
+      id_mark,
+      id_transmission,
+      id_fuel,
+    } = filters;
     const { page = 1, per_page = 10 } = pagination;
 
     const where: Record<string, any> = {};
@@ -78,11 +117,11 @@ export class ProductService {
       };
     }
 
-    const total = await this.countAll()
+    const total = await this.countAll();
     const response = await this.prisma.client.products.findMany({
       where,
       orderBy: {
-        id: 'asc'
+        id: 'asc',
       },
       skip: Number((page - 1) * per_page),
       take: Number(per_page),
@@ -92,19 +131,19 @@ export class ProductService {
         transmission: true,
         fuel: true,
       },
-    })
+    });
     const meta = {
       total,
       page: Number(page),
       per_page: Number(per_page),
-    }
-    return buildResponseMeta('Product list', response, meta)
+    };
+    return buildResponseMeta('Product list', response, meta);
   }
 
   async findOne(id: number) {
     const response = await this.prisma.client.products.findUnique({
       where: {
-        id
+        id,
       },
       include: {
         type: true,
@@ -112,66 +151,89 @@ export class ProductService {
         transmission: true,
         fuel: true,
       },
-    })
+    });
 
-    return buildResponse('Product found', response)
+    return buildResponse('Product found', response);
   }
 
   async update(id: number, payload: UpdateProductDto, image: string) {
-    await this.CheckData(id)
+    await this.CheckData(id);
+
+    const { id_type, id_mark, id_transmission, id_fuel } = payload;
+
+    // Validate related IDs
+    const [type, mark, transmission, fuel] = await Promise.all([
+      this.prisma.client.types.findUnique({ where: { id: Number(id_type) } }),
+      this.prisma.client.marks.findUnique({ where: { id: Number(id_mark) } }),
+      this.prisma.client.transmissions.findUnique({
+        where: { id: Number(id_transmission) },
+      }),
+      this.prisma.client.fuels.findUnique({ where: { id: Number(id_fuel) } }),
+    ]);
+
+    if (!type) {
+      throw new NotFoundException(`Type not found.`);
+    }
+    if (!mark) {
+      throw new NotFoundException(`Mark not found.`);
+    }
+    if (!transmission) {
+      throw new NotFoundException(`Transmission not found.`);
+    }
+    if (!fuel) {
+      throw new NotFoundException(`Fuel not found.`);
+    }
+
     const data = {
       ...payload,
       image,
+      ...[
+        'price',
+        'id_type',
+        'id_mark',
+        'id_transmission',
+        'id_fuel',
+        'seat',
+      ].reduce(
+        (acc, key) => {
+          if (payload[key]) {
+            acc[key] = Number(payload[key]);
+          }
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
     };
-
-    if (payload.price) {
-      data.price = Number(payload.price);
-    }
-    if (payload.id_type) {
-      data.id_type = Number(payload.id_type);
-    }
-    if (payload.id_mark) {
-      data.id_mark = Number(payload.id_mark);
-    }
-    if (payload.id_transmission) {
-      data.id_transmission = Number(payload.id_transmission);
-    }
-    if (payload.id_fuel) {
-      data.id_fuel = Number(payload.id_fuel);
-    }
-    if (payload.seat) {
-      data.seat = Number(payload.seat);
-    }
 
     const response = await this.prisma.client.products.update({
       where: {
-        id
+        id,
       },
-      data
-    })
+      data,
+    });
 
-    return buildResponse('Product updated', response)
+    return buildResponse('Product updated', response);
   }
 
   async remove(id: number) {
-    await this.CheckData(id)
-    const response = await this.prisma.client.products.delete({id})
-    return buildResponse('Product deleted', response)
+    await this.CheckData(id);
+    const response = await this.prisma.client.products.delete({ id });
+    return buildResponse('Product deleted', response);
   }
 
   async CheckData(id: number) {
     const dataExisting = await this.prisma.client.products.findUnique({
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
     if (!dataExisting) {
-      throw new NotFoundException('Product not found')
+      throw new NotFoundException('Product not found');
     }
   }
 
   async countAll() {
     const totalCount = await this.prisma.client.marks.count();
-    return totalCount
+    return totalCount;
   }
 }
