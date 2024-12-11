@@ -117,7 +117,6 @@ export class ProductService {
       };
     }
 
-    const total = await this.countAll();
     const response = await this.prisma.client.products.findMany({
       where,
       orderBy: {
@@ -132,6 +131,9 @@ export class ProductService {
         fuel: true,
       },
     });
+
+    const total = await this.prisma.client.products.count();
+
     const meta = {
       total,
       page: Number(page),
